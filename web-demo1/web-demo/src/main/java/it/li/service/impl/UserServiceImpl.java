@@ -24,10 +24,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //排序
         page.addOrder(OrderItem.asc("id"));
         //查询
-        List<User> list = list(page, null);
-        //总 数
-        log.info("total: {}", page.getTotal());
+        Page<User> userPage = page(page); // 分页查询
+        List<User> list = userPage.getRecords(); // 获取结果
         log.info("list: {}", list);
+        log.info("total: {}", userPage.getTotal());
+        log.info("pages: {}", userPage.getPages());
+        log.info("current: {}", userPage.getCurrent());
         return list;
     }
 
@@ -42,7 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new CreateUserException("密码长度不能小于5");
         }
         //1.查询数据库中是否存在
-        User user1 = getOne(new QueryWrapper<User>().eq("name", user.getUsername()));
+        User user1 = getOne(new QueryWrapper<User>().eq("username", user.getUsername()));
         if (user1 != null) {
             throw new CreateUserException("用户已存在");
         }
